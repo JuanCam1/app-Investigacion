@@ -153,3 +153,24 @@ button {
 .button_solucion {
   margin-bottom: 2rem;
 }
+
+.valor_optimo {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2rem;
+  gap: 1rem;
+  margin-top: 2rem;
+
+  & .span_punto::before {
+    content: "Punto optimo: ";
+    font-weight: 700;
+  }
+
+  & .span_fo::before {
+    content: "Función Objetivo: ";
+    font-weight: 700;
+  }
+}
