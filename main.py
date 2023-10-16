@@ -1,5 +1,7 @@
 from pyscript import document
 from sympy import symbols, Eq, solve
+from scipy.optimize import linprog
+import numpy as np
 import matplotlib.pyplot as plt
 import random
 
@@ -129,13 +131,41 @@ def mostar_solucion(event):
             input_res_cont = document.querySelector('.div_res_'+index_i+' #input_res_'+index_j)
             input_res_index_i.append(input_res_cont.value)
         values_restricciones.append(input_res_index_i)
-    
+
+    x_opt,y_opt,result,c = valor_optimo(values_restricciones,values_objetivos)
     soluciones_x1_0,soluciones_x2_0 =hallar_puntos(values_restricciones)
     script = crear_elemento("py-script")
     agregar_atributos(script,"output","lineplot")
-    script.textContent = f'{graficar(soluciones_x1_0,soluciones_x2_0)}'
+    script.textContent = f'{graficar(soluciones_x1_0,soluciones_x2_0,x_opt,y_opt)}'
     agregar_elemento(body,script)
+    valor_optimo_dom(x_opt,y_opt,result,c)
+
+def valor_optimo(values_restricciones,values_objetivos):
+    c = [int(valor) for valor in values_objetivos]
+    res_izq_valores_x= [int(sublista[0]) for sublista in values_restricciones]
+    res_izq_valores_y = [int(sublista[1]) for sublista in values_restricciones]
+    res_der_valores = [int(sublista[-1]) for sublista in values_restricciones]
+
+    A = np.array([res_izq_valores_x, res_izq_valores_y]).T      
+    b = np.array(res_der_valores)
+    result = linprog(c, A_ub=-A, b_ub=-b)
+    x_opt, y_opt = result.x
+    return x_opt,y_opt,result,c
     
+
+def valor_optimo_dom(x_opt,y_opt,result,c):
+    div = crear_elemento("div")
+    agregar_atributos(div,"class","valor_optimo")
+    span_punto = crear_elemento("span")
+    agregar_atributos(span_punto,"class","span_punto")
+    span_fo = crear_elemento("span")
+    agregar_atributos(span_fo,"class","span_fo")
+    
+    span_punto.innerText = f"({x_opt},{y_opt})"
+    span_fo.innerText = f"{c[0]}({x_opt})+{c[1]}({y_opt}) = {result.fun}"
+    agregar_elemento(div,span_punto)
+    agregar_elemento(div,span_fo)
+    agregar_elemento(body,div)
 
 def hallar_puntos(values_restricciones):
     var,res= valores_restricciones()
@@ -171,7 +201,7 @@ def hallar_puntos(values_restricciones):
     return soluciones_x1_0,soluciones_x2_0
     
 
-def graficar(soluciones_x1_0,soluciones_x2_0):
+def graficar(soluciones_x1_0,soluciones_x2_0,x_opt,y_opt):
     fig, ax = plt.subplots()
     maximo_punto = max(soluciones_x1_0)
     maximo_punto_2 = max(soluciones_x2_0)
@@ -184,13 +214,14 @@ def graficar(soluciones_x1_0,soluciones_x2_0):
     for punto in soluciones_x2_0:
         ax.plot(punto[0], punto[1], marker='.')
 
-    colores = ['red','blue','yellow','black','green']
+    colores = ['red','blue','yellow','black','green',"gray","blueViolet","brown","darkSlateBlue"]
     for punto1, punto2 in zip(soluciones_x1_0, soluciones_x2_0):
         x_values = [punto1[0], punto2[0]]
         y_values = [punto1[1], punto2[1]]
         color_aleatorio = random.choice(colores)
         ax.plot(x_values, y_values, linestyle='-', color=color_aleatorio)
-
+        
+    ax.scatter(x_opt, y_opt, color='black', marker='o')
     ax.set_xlabel('Eje X')
     ax.set_ylabel('Eje Y')
 
