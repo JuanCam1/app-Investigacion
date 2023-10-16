@@ -1,0 +1,155 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap");
+
+body {
+  font-family: "Roboto", sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  width: 100%;
+  height: auto;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 2rem 0;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  width: 70%;
+  max-width: 1200px;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+.container h1,
+.container p {
+  text-wrap: balance;
+  text-align: center;
+  margin: 10px 0;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 3rem;
+  background: rgb(225, 91, 192);
+  background: linear-gradient(
+    180deg,
+    rgb(87, 110, 214) 26%,
+    rgba(84, 89, 253, 1) 63%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.container p {
+  margin-bottom: 3rem;
+}
+
+.valores {
+  width: 30%;
+  min-width: 336px;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 3rem;
+  font-size: 1rem;
+}
+
+input {
+  height: 2rem;
+  border-radius: 5px;
+  border: 1px solid #cecece;
+  padding-left: 5px;
+  font-size: 19px;
+
+  &:focus {
+    outline: none;
+    border: 1px solid rgb(87, 110, 214);
+  }
+}
+
+button {
+  padding: 0.7rem 1.3rem;
+  color: rgba(84, 89, 253, 1);
+  background-color: white;
+  border: 1px solid rgba(84, 89, 253, 1);
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-size: 17px;
+
+  &:hover {
+    color: white;
+    background-color: rgba(84, 89, 253, 1);
+  }
+}
+
+#funcion_objetiva,
+#funcion_res {
+  width: 100%;
+  margin-top: 3rem;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+
+  & input {
+    width: 3rem;
+    text-align: center;
+  }
+}
+
+#funcion_objetiva {
+  & .container_fo {
+    padding: 1rem 0;
+    width: 100%;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+  }
+}
+
+#funcion_res {
+  & .container_res {
+    padding: 1rem 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+
+    & > div {
+      gap: 5px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+
+  & .input_res {
+    width: 3rem;
+  }
+}
+.container_fo input:first-child::before {
+  content: "Fo:";
+  display: block;
+}
+
+.subRestriction:not(:last-child)::after {
+  content: ",";
+}
+
+.button_solucion {
+  margin-bottom: 2rem;
+}
