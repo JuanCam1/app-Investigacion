@@ -136,12 +136,76 @@ def mostar_solucion(event):
 
     x_opt,y_opt,result,c = valor_optimo(values_restricciones,values_objetivos)
     soluciones_x1_0,soluciones_x2_0 =hallar_puntos(values_restricciones)
+    intersecciones = puntos_interseccion(values_restricciones)  # Define intersecciones
     script = crear_elemento("py-script")
     agregar_atributos(script,"output","lineplot")
     agregar_atributos(script,"id","script_grafica")
     script.textContent = f'{graficar(soluciones_x1_0,soluciones_x2_0,x_opt,y_opt, values_restricciones)}'
     agregar_elemento(body,script)
+    generar_tabla_intersecciones_factibles(values_restricciones)
     valor_optimo_dom(x_opt,y_opt,result,c)
+
+def es_factible(punto, values_restricciones):
+    """Determina si un punto está en la región factible definida por las restricciones."""
+    x, y = punto
+    for restriccion in values_restricciones:
+        a = float(restriccion[0])
+        b = float(restriccion[1])
+        c = float(restriccion[2])
+        a, b, c = [float(val) for val in restriccion]  # Convertir a flotante
+        if a * x + b * y > c:
+            return False
+    return True
+
+import string
+
+def generar_tabla_intersecciones_factibles(values_restricciones):
+    # 1. Obtener puntos donde las restricciones intersectan los ejes
+    soluciones_x1_0, soluciones_x2_0 = hallar_puntos(values_restricciones)
+    puntos = soluciones_x1_0 + soluciones_x2_0
+    
+    # 2. Obtener puntos de intersección entre las restricciones
+    intersecciones = puntos_interseccion(values_restricciones)
+    puntos.extend(intersecciones)
+    
+    # 3. Agregar el origen a la lista de puntos
+    puntos.append((0,0))
+    
+    # 4. Filtrar puntos para quedarse solo con los factibles
+    puntos_factibles = [punto for punto in puntos if es_factible(punto, values_restricciones)]
+    
+    # Generar tabla
+    tabla = crear_elemento("table")
+    agregar_atributos(tabla, "class", "styled-table")
+    thead = crear_elemento("thead")
+    tr_head = crear_elemento("tr")
+    th_nombre = crear_elemento("th")
+    th_nombre.innerText = "Punto"
+    th_x = crear_elemento("th")
+    th_x.innerText = "X"
+    th_y = crear_elemento("th")
+    th_y.innerText = "Y"
+    agregar_elemento(tr_head, th_nombre)
+    agregar_elemento(tr_head, th_x)
+    agregar_elemento(tr_head, th_y)
+    agregar_elemento(thead, tr_head)
+    agregar_elemento(tabla, thead)
+    
+    tbody = crear_elemento("tbody")
+    for idx, punto in enumerate(puntos_factibles):
+        tr = crear_elemento("tr")
+        td_nombre = crear_elemento("td")
+        td_nombre.innerText = string.ascii_lowercase[idx]  # Nombrar el punto
+        td_x = crear_elemento("td")
+        td_x.innerText = str(punto[0])
+        td_y = crear_elemento("td")
+        td_y.innerText = str(punto[1])
+        agregar_elemento(tr, td_nombre)
+        agregar_elemento(tr, td_x)
+        agregar_elemento(tr, td_y)
+        agregar_elemento(tbody, tr)
+    agregar_elemento(tabla, tbody)
+    agregar_elemento(body, tabla)
 
 def valor_optimo(values_restricciones,values_objetivos):
     c = [int(valor) for valor in values_objetivos]
@@ -225,6 +289,7 @@ def puntos_interseccion(values_restricciones):
     
 def graficar(soluciones_x1_0,soluciones_x2_0,x_opt,y_opt,values_restricciones):
     fig, ax = plt.subplots()
+    plt.rcParams['toolbar'] = 'None'
     maximo_punto = max(soluciones_x1_0)
     maximo_punto_2 = max(soluciones_x2_0)
     plt.xlim(0, max(maximo_punto_2[0]+5, 10))
@@ -296,4 +361,3 @@ def capturar_valores(event):
         agregar_atributos(button,"py-click","mostar_solucion")
         agregar_atributos(button,"class","button_solucion")
         agregar_elemento(body,button)
-
