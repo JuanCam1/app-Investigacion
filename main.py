@@ -139,7 +139,7 @@ def mostar_solucion(event):
     script = crear_elemento("py-script")
     agregar_atributos(script,"output","lineplot")
     agregar_atributos(script,"id","script_grafica")
-    script.textContent = f'{graficar(soluciones_x1_0,soluciones_x2_0,x_opt,y_opt)}'
+    script.textContent = f'{graficar(soluciones_x1_0,soluciones_x2_0,x_opt,y_opt, values_restricciones)}'
     agregar_elemento(body,script)
     valor_optimo_dom(x_opt,y_opt,result,c)
 
@@ -203,28 +203,63 @@ def hallar_puntos(values_restricciones):
     
     return soluciones_x1_0,soluciones_x2_0
     
-
-def graficar(soluciones_x1_0,soluciones_x2_0,x_opt,y_opt):
+def puntos_interseccion(values_restricciones):
+    var, res = valores_restricciones()
+    variables = {}
+    for i in range(1, var+1):
+        variables[f'x{i}'] = symbols(f'x{i}')
+    
+    ecuaciones = []
+    for a, b, c in values_restricciones:
+        ecuacion = Eq(int(a) * variables['x1'] + int(b) * variables['x2'], int(c))
+        ecuaciones.append(ecuacion)
+    
+    puntos = []
+    for i in range(len(ecuaciones)):
+        for j in range(i+1, len(ecuaciones)):
+            sol = solve((ecuaciones[i], ecuaciones[j]), (variables['x1'], variables['x2']))
+            if sol:  # si hay solución
+                puntos.append((float(sol[variables['x1']]), float(sol[variables['x2']])))
+    
+    return puntos
+    
+def graficar(soluciones_x1_0,soluciones_x2_0,x_opt,y_opt,values_restricciones):
     fig, ax = plt.subplots()
     maximo_punto = max(soluciones_x1_0)
     maximo_punto_2 = max(soluciones_x2_0)
     plt.xlim(0, max(maximo_punto_2[0]+5, 10))
     plt.ylim(0, max(maximo_punto[1]+5, 5))
-
-    for punto in soluciones_x1_0:
-        ax.plot(punto[0], punto[1], marker='.')
-
-    for punto in soluciones_x2_0:
-        ax.plot(punto[0], punto[1], marker='.')
-
+    
+    # Sombrear la región factible 
+    x = np.linspace(0, max(maximo_punto_2[0]+5, 10), 400)
+    y_lists = []
+    
+    for punto1, punto2 in zip(soluciones_x1_0, soluciones_x2_0):
+        y_list = (punto2[1] - punto1[1])/(punto2[0] - punto1[0]) * (x - punto1[0]) + punto1[1]
+        y_lists.append(y_list)
+    y_min = np.min(y_lists, axis=0)
+    ax.fill_between(x, 0, y_min, where=(y_min>=0), color='lightgray', alpha=0.5)
+    
+    #graficar las restricciones
     colores = ['red','blue','yellow','black','green',"gray","blueViolet","brown","darkSlateBlue"]
     for punto1, punto2 in zip(soluciones_x1_0, soluciones_x2_0):
+        color_aleatorio = random.choice(colores)
+        ax.scatter(punto1[0], punto1[1], s=50, color=color_aleatorio)
+        ax.annotate(f"({punto1[0]},{punto1[1]})", (punto1[0], punto1[1]), fontsize=8, xytext=(5,-10), textcoords='offset points')
+        ax.scatter(punto2[0], punto2[1], s=50, color=color_aleatorio)
+        ax.annotate(f"({punto2[0]},{punto2[1]})", (punto2[0], punto2[1]), fontsize=8, xytext=(5,-10), textcoords='offset points')
+        
         x_values = [punto1[0], punto2[0]]
         y_values = [punto1[1], punto2[1]]
-        color_aleatorio = random.choice(colores)
         ax.plot(x_values, y_values, linestyle='-', color=color_aleatorio)
-        
-    ax.scatter(x_opt, y_opt, color='black', marker='o')
+
+    # Puntos de intersección
+    intersecciones = puntos_interseccion(values_restricciones)
+    for x, y in intersecciones:
+        if 0 <= x <= max(maximo_punto_2[0]+5, 10) and 0 <= y <= max(maximo_punto[1]+5, 5):
+            ax.scatter(x, y, color='purple', marker='o', s=50)
+            ax.annotate(f"({x:.2f},{y:.2f})", (x, y), fontsize=8, xytext=(5,10), textcoords='offset points')
+    
     ax.set_xlabel('Eje X')
     ax.set_ylabel('Eje Y')
 
