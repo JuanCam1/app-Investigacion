@@ -241,10 +241,15 @@ def capturar_valores(event):
         for i in range(res):
             banderas.append('\u2265')
 
-    generate_variables(var)    
-    generate_restricciones(var,res,banderas)
-    button = crear_elemento("button")
-    button.innerText = "Solución"
-    agregar_atributos(button,"py-click","mostar_solucion")
-    agregar_atributos(button,"class","button_solucion")
-    agregar_elemento(body,button)
+    if res is None or (isinstance(res, (int, float)) and res < 1):
+        # agregar Pop-up
+        h2 = crear_elemento("h2")
+        h2.innerText="Alerta: Para usar el método gráfico, las restricciones deben ser mayores a 0."
+    else:
+        generate_variables(var)    
+        generate_restricciones(var,res,banderas)
+        button = crear_elemento("button")
+        button.innerText = "Solución"
+        agregar_atributos(button,"py-click","mostar_solucion")
+        agregar_atributos(button,"class","button_solucion")
+        agregar_elemento(body,button)
