@@ -3,6 +3,13 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+      integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
     <title>Método Grafico</title>
     <script
       type="module"
@@ -26,12 +33,14 @@
         Se va a:
         <input type="text" value="Maximizar" id="opcion" disabled />
       </div>
-      <button py-click="capturar_valores">Continuar</button>
+      <button py-click="capturar_valores" class="button_cont">Continuar</button>
       <div id="funcion_objetiva"></div>
       <div id="funcion_res"></div>
     </div>
+    <button id="reload">
+      <i class="fa-solid fa-rotate-right"></i>
+    </button>
     <script type="py" src="./main.py" config="./config.json"></script>
+    <script src="./index.js"></script>
   </body>
 </html>
-
-<!-- // { "packages": ["numpy", "matplotlib", "scipy"] } -->

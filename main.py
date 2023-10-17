@@ -11,6 +11,8 @@ def valores_restricciones():
     input_res = document.querySelector("#restricciones")
     variables = input_text.value
     restricciones = input_res.value
+    if(restricciones == ""): 
+        restricciones = "0"
     var = convertir_Aentero(variables)
     res = convertir_Aentero(restricciones)
     return var , res
@@ -80,9 +82,9 @@ def generate_restricciones(variables,rest,banderas):
             agregar_atributos(input,"class","input_res_"+index_i)
             agregar_elemento(div,input)
             
+            span = crear_elemento("span")
+            sub = crear_elemento("sub")
             if(j < variables):
-                span = crear_elemento("span")
-                sub = crear_elemento("sub")
                 sub.innerText = convertir_Atexto(j+1)
                 span.innerText = "X"
                 agregar_elemento(span,sub)
@@ -136,6 +138,7 @@ def mostar_solucion(event):
     soluciones_x1_0,soluciones_x2_0 =hallar_puntos(values_restricciones)
     script = crear_elemento("py-script")
     agregar_atributos(script,"output","lineplot")
+    agregar_atributos(script,"id","script_grafica")
     script.textContent = f'{graficar(soluciones_x1_0,soluciones_x2_0,x_opt,y_opt)}'
     agregar_elemento(body,script)
     valor_optimo_dom(x_opt,y_opt,result,c)
@@ -227,7 +230,6 @@ def graficar(soluciones_x1_0,soluciones_x2_0,x_opt,y_opt):
 
     ax.legend(["Método Grafico"], fontsize=8)
     plt.show()
-    fig
 
 def capturar_valores(event):
     input_max = document.querySelector("#opcion")
@@ -241,11 +243,17 @@ def capturar_valores(event):
         for i in range(res):
             banderas.append('\u2265')
 
-    if res is None or (isinstance(res, (int, float)) and res < 1):
-        # agregar Pop-up
-        h2 = crear_elemento("h2")
-        h2.innerText="Alerta: Para usar el método gráfico, las restricciones deben ser mayores a 0."
+    h2 = crear_elemento("h2")
+    agregar_atributos(h2,"class","alert_style")
+    agregar_atributos(h2,"id","error")
+    h2.innerText="Restricciones > 1."
+    agregar_elemento(body,h2)
+    
+    if (res <= 1):
+        h2.style.display = 'block'
+        print('hi')
     else:
+        h2.style.display = 'none'
         generate_variables(var)    
         generate_restricciones(var,res,banderas)
         button = crear_elemento("button")
@@ -253,3 +261,4 @@ def capturar_valores(event):
         agregar_atributos(button,"py-click","mostar_solucion")
         agregar_atributos(button,"class","button_solucion")
         agregar_elemento(body,button)
+
