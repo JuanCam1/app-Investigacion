@@ -229,5 +229,9 @@ Esta función no tiene argumentos.
 
 (TODO: Describir la función `capturar_valores` basado en su funcionalidad)
 
+
+**Integrantes**
+Juan Camilo Rojas Diaz
+Brayan Meza Castillo
 ---
 
